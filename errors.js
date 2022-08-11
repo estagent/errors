@@ -3,10 +3,20 @@ import statusCodes from '@revgaming/status'
 
 export default err => {
   const errors = {}
-  if (err.response) {
-    if (err.response.data) {
-      const data = err.response.data
-      if (err.response.status === statusCodes.UNPROCESSABLE_ENTITY) {
+  let response, data
+
+  if (err.responseJSON || err.responseText) {
+    // isjQueryAjax
+    response = err
+    data = err.responseJSON || err.responseText
+  } else {
+    response = err.response
+    data = response?.data
+  }
+
+  if (response) {
+    if (data) {
+      if (response.status === statusCodes.UNPROCESSABLE_ENTITY) {
         if (data.errors) {
           for (const key in data.errors) {
             errors[key] = data.errors[key]
